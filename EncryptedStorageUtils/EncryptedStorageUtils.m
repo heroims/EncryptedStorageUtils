@@ -8,6 +8,7 @@
 
 #import "EncryptedStorageUtils.h"
 #import <CommonCrypto/CommonDigest.h>
+#import <objc/runtime.h>
 
 @implementation NSString (EncryptedStorageUtils)
 
