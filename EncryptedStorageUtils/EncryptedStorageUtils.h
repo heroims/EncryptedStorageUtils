@@ -13,7 +13,7 @@
 //实现此协议必须实现以下方法，该协议针对存储数据对象的类做Category，实现不同数据类型不同加密
 @required
 -(NSData*)customEncryptedData;
--(id)customDeCryptedData;
+-(id)customDeCryptedData:(NSData*)data;
 
 @end
 

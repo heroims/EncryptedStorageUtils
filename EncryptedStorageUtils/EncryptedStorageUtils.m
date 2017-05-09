@@ -36,6 +36,32 @@
 
 @end
 
+@interface EncryptedStorageModel : NSObject<NSCoding>
+
+@property(nonatomic,strong)NSString *className;
+@property(nonatomic,strong)NSData *encrptedData;
+
+@end
+
+@implementation EncryptedStorageModel
+
+- (void)encodeWithCoder:(NSCoder *)aCoder{
+    [aCoder encodeObject:self.className forKey:@"EncryptedStorageModel_className"];
+    [aCoder encodeObject:self.encrptedData forKey:@"EncryptedStorageModel_encrptedData"];
+}
+
+-(instancetype)initWithCoder:(NSCoder *)aDecoder{
+    self=[super init];
+    if (aDecoder) {
+        _className=[aDecoder decodeObjectForKey:@"EncryptedStorageModel_className"];
+        _encrptedData=[aDecoder decodeObjectForKey:@"EncryptedStorageModel_encrptedData"];
+
+    }
+    return self;
+}
+
+@end
+
 @implementation EncryptedStorageUtils
 
 +(NSData*)customEncryptedData:(id)aData{
@@ -55,7 +81,11 @@
     }
 
     if ([aData conformsToProtocol:objc_getProtocol("EncryptedStorageUtilsProtocolToData")]) {
-       aData=[(id<EncryptedStorageUtilsProtocolToData>)aData customEncryptedData];
+        EncryptedStorageModel *tmpModel=[[EncryptedStorageModel alloc] init];
+        tmpModel.encrptedData=[(id<EncryptedStorageUtilsProtocolToData>)aData customEncryptedData];
+        tmpModel.className=NSStringFromClass([aData class]);
+        
+        aData=tmpModel;
     }
 
     NSString *assertMessage=[NSString stringWithFormat:@"%@ 未实现NSCoding相关协议",[aData class]];
@@ -69,9 +99,14 @@
     @try {
         id tmpData=[NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
         
-        if ([tmpData conformsToProtocol:objc_getProtocol("EncryptedStorageUtilsProtocolToData")]) {
-            tmpData=[(id<EncryptedStorageUtilsProtocolToData>)tmpData customDeCryptedData];
+        if ([tmpData isKindOfClass:[EncryptedStorageModel class]]) {
+            Class tmpClass=NSClassFromString([(EncryptedStorageModel*)tmpData className]);
+            if ([tmpClass conformsToProtocol:objc_getProtocol("EncryptedStorageUtilsProtocolToData")]) {
+                tmpData=[[[tmpClass alloc] init] customDeCryptedData:[(EncryptedStorageModel*)tmpData encrptedData]];
+            }
+
         }
+        
 
         return tmpData;
     } @catch (NSException *exception) {
