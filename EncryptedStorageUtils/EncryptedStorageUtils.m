@@ -60,7 +60,8 @@
 
     NSString *assertMessage=[NSString stringWithFormat:@"%@ 未实现NSCoding相关协议",[aData class]];
     NSAssert([aData conformsToProtocol:objc_getProtocol("NSCoding")], assertMessage);
-    
+    if (assertMessage){}
+        
     return [NSKeyedArchiver archiveRootObject:aData toFile:[filePath stringByAppendingPathComponent:fileName]];
 }
 
