@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
 s.name                  = 'EncryptedStorageUtils'
-s.version               = '1.0'
+s.version               = '1.2'
 s.summary               = '加密存储'
 s.homepage              = 'https://github.com/heroims/EncryptedStorageUtils'
 s.license               = { :type => 'MIT', :file => 'README.md' }
